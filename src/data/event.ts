@@ -19,18 +19,32 @@ export const eventData = {
     { position: "3rd Position", reward: "Trophy + Certificate", icon: "🥉" }
   ],
   benefits: [
-    "Learn AI-assisted web development",
-    "Showcase creativity and design skills",
-    "Experience the future of coding",
-    "Build real-world projects",
-    "Win prizes and certificates"
+    { title: "Learn AI-Assisted Development", icon: "BrainCircuit" },
+    { title: "Improve Frontend Skills", icon: "Code2" },
+    { title: "Experience Vibe Coding", icon: "Sparkles" },
+    { title: "Build Real Projects", icon: "Rocket" },
+    { title: "Showcase Creativity", icon: "Palette" },
+    { title: "Compete with Talented Students", icon: "Users" },
+    { title: "Win Recognition", icon: "Trophy" },
+    { title: "Prepare for Future Hackathons", icon: "Target" }
   ],
-  participationCertificate: "All participants will receive an E-Certificate.",
+  tools: [
+    "ChatGPT",
+    "Cursor",
+    "Bolt",
+    "Claude",
+    "Gemini",
+    "Lovable",
+    "Windsurf",
+    "GitHub Copilot"
+  ],
+  workflow: ["Idea", "Prompt", "Build", "Refine", "Deploy"],
+  participationCertificate: "E-Certificate for all participants",
   seatsInfo: "⏳ Limited Seats Available!",
   contact: {
     club: "AI & Machine Learning Club",
     college: "Oriental College of Technology, Bhopal",
-    email: "aimlclub.oct@oriental.ac.in",
+    email: "aimlcluboct@gmail.com",
     phone: "+91 91795 87402",
     instagram: "https://instagram.com/aiml_club_oct",
     github: "https://github.com/UmeshCode1",

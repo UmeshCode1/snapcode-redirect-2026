@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { eventData } from "@/data/event";
 import {
   Calendar,
   MapPin,
   Ticket,
-  Pause,
-  Play,
   Instagram,
   Github,
   Mail,
@@ -18,19 +16,26 @@ import {
   Check,
   Sparkles,
   ArrowRight,
-  RefreshCw,
   Trophy,
   Code2,
   BrainCircuit,
-  Rocket
+  Rocket,
+  Palette,
+  Users,
+  Target,
+  Clock,
+  Award,
+  ShieldCheck,
+  X,
+  Play
 } from "lucide-react";
 
-const INITIAL_TIME = 5; // Reduced to 5 seconds as requested
+const INITIAL_TIME = 5;
 
 // Animation Variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
 };
 
 const staggerContainer = {
@@ -38,27 +43,40 @@ const staggerContainer = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15
+      staggerChildren: 0.1
     }
   }
 };
 
 const hoverScale = {
-  hover: { scale: 1.05, transition: { duration: 0.2 } },
+  hover: { scale: 1.05, transition: { type: "spring", stiffness: 300, damping: 10 } },
   tap: { scale: 0.95 }
 };
 
+// Map string icon names to Lucide components safely
+const IconMap: Record<string, any> = {
+  BrainCircuit,
+  Code2,
+  Sparkles,
+  Rocket,
+  Palette,
+  Users,
+  Trophy,
+  Target
+};
+
 export default function Home() {
+  const prefersReducedMotion = useReducedMotion();
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [isActive, setIsActive] = useState(true);
+  const [isCancelled, setIsCancelled] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [typingText, setTypingText] = useState("");
   
-  const fullText = "Build. Design. Deploy. Win.";
+  const [typingIndex, setTypingIndex] = useState(0);
+  const typingWords = ["Build.", "Design.", "Deploy.", "Win."];
 
-  // Set mounted flag to avoid hydration differences
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
@@ -67,23 +85,18 @@ export default function Home() {
   // Typing effect
   useEffect(() => {
     if (!mounted) return;
-    let i = 0;
     const typingInterval = setInterval(() => {
-      if (i < fullText.length) {
-        setTypingText(fullText.substring(0, i + 1));
-        i++;
-      } else {
-        clearInterval(typingInterval);
-      }
-    }, 100);
+      setTypingIndex((prev) => (prev + 1) % (typingWords.length + 1));
+    }, 800);
     return () => clearInterval(typingInterval);
-  }, [mounted, fullText]);
+  }, [mounted, typingWords.length]);
 
   // Handle countdown logic
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || isCancelled || !isActive) return;
+    
     if (timeLeft <= 0) {
-      if (isActive && !isRedirecting) {
+      if (!isRedirecting) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsRedirecting(true);
         window.location.href = eventData.registrationUrl;
@@ -91,23 +104,21 @@ export default function Home() {
       return;
     }
 
-    if (!isActive) return;
-
     const timer = setTimeout(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [timeLeft, isActive, isRedirecting, mounted]);
+  }, [timeLeft, isActive, isCancelled, isRedirecting, mounted]);
 
-  // Force instant redirection
   const handleProceed = () => {
     setIsRedirecting(true);
     window.location.href = eventData.registrationUrl;
   };
 
-  const toggleTimer = () => {
-    setIsActive(!isActive);
+  const cancelRedirect = () => {
+    setIsCancelled(true);
+    setIsActive(false);
   };
 
   const handleShare = async () => {
@@ -130,13 +141,6 @@ export default function Home() {
     }
   };
 
-  // Circular progress calculations
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = mounted
-    ? circumference - (timeLeft / INITIAL_TIME) * circumference
-    : 0;
-
   if (!mounted) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
@@ -145,30 +149,21 @@ export default function Home() {
     );
   }
 
-  return (
-    <div className="relative min-h-screen w-full bg-grid-pattern pb-16 pt-6 px-4 md:px-8 flex flex-col justify-between overflow-hidden">
-      {/* Decorative Glow Elements & Particles */}
-      <div className="fixed top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none animate-pulse-slow"></div>
-      <div className="fixed bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] bg-violet-600/20 rounded-full blur-[100px] pointer-events-none animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
-      <div className="fixed top-3/4 left-3/4 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+  const animProps = prefersReducedMotion ? {} : { variants: fadeInUp };
 
-      {/* Header with logos */}
-      <motion.header 
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-6xl mx-auto glass-panel rounded-2xl py-4 px-6 md:px-8 flex items-center justify-between shadow-lg mb-12 relative z-10 border border-white/10"
-      >
-        <div className="flex items-center gap-3">
-          <Image
-            src="/assets/logo-college.png"
-            alt="Oriental College of Technology Bhopal Logo"
-            width={150}
-            height={45}
-            priority
-            className="h-10 w-auto object-contain brightness-110"
-          />
-        </div>
+  return (
+    <div className="relative min-h-screen w-full bg-grid-pattern pb-16 pt-6 px-4 md:px-8 flex flex-col font-sans overflow-x-hidden">
+      
+      {/* 1. Header & Hero Section */}
+      <header className="w-full max-w-6xl mx-auto flex items-center justify-between mb-8 relative z-20">
+        <Image
+          src="/assets/logo-college.png"
+          alt="Oriental College of Technology Bhopal Logo"
+          width={150}
+          height={45}
+          priority
+          className="h-10 w-auto object-contain brightness-110"
+        />
         <div className="flex items-center gap-3">
           <span className="hidden sm:inline-block text-xs font-semibold uppercase tracking-widest text-slate-400 font-space text-right">
             {eventData.badge}
@@ -182,393 +177,323 @@ export default function Home() {
             className="h-11 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]"
           />
         </div>
-      </motion.header>
+      </header>
 
-      {/* Main Body content */}
-      <main className="w-full max-w-6xl mx-auto flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-10 items-center relative z-10">
-        {/* Left Side: Event Details Header */}
+      <main className="w-full max-w-6xl mx-auto flex-1 flex flex-col gap-16 relative z-10">
+        
+        {/* Floating CSS Particles (Lightweight) */}
+        {!prefersReducedMotion && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+            {[...Array(6)].map((_, i) => (
+              <div 
+                key={i} 
+                className={`absolute rounded-full bg-emerald-500/20 blur-xl animate-float`}
+                style={{
+                  width: Math.random() * 100 + 50 + 'px',
+                  height: Math.random() * 100 + 50 + 'px',
+                  left: Math.random() * 100 + '%',
+                  top: Math.random() * 100 + '%',
+                  animationDelay: `${i * -2}s`,
+                  animationDuration: `${Math.random() * 5 + 5}s`
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         <motion.section 
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left gap-6"
+          className="flex flex-col items-center text-center gap-6 mt-4"
         >
-          <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-            <Sparkles className="h-4 w-4 animate-pulse text-cyan-400" />
+          <motion.div {...animProps} className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+            <Sparkles className="h-4 w-4 animate-pulse" />
             Frontend Design Challenge
           </motion.div>
 
-          <motion.h1 variants={fadeInUp} className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-tight">
+          <motion.h1 {...animProps} className="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tight leading-tight">
             <span className="bg-gradient-to-br from-emerald-400 via-cyan-400 to-violet-500 bg-clip-text text-transparent drop-shadow-sm glow-text-emerald">
               {eventData.title}
             </span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="text-xl sm:text-2xl font-bold text-slate-200 leading-tight font-space">
+          <motion.p {...animProps} className="text-xl sm:text-2xl font-bold text-slate-200 leading-tight font-space">
             {eventData.subtitle}
           </motion.p>
           
-          <motion.div variants={fadeInUp} className="h-8">
-             <p className="text-emerald-400 font-space text-lg font-bold tracking-wider">
-               {typingText}
-               <motion.span 
-                 animate={{ opacity: [0, 1, 0] }} 
-                 transition={{ repeat: Infinity, duration: 0.8 }}
-                 className="inline-block w-2 h-5 bg-emerald-400 ml-1 translate-y-1"
-               />
-             </p>
-          </motion.div>
-
-          <motion.p variants={fadeInUp} className="text-slate-400 max-w-xl text-base sm:text-lg leading-relaxed">
-            {eventData.description}
-          </motion.p>
-
-          {/* Action tags */}
-          <motion.div variants={fadeInUp} className="flex flex-wrap gap-3 justify-center lg:justify-start pt-2">
-            <span className="px-4 py-1.5 rounded-lg text-sm font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
-              ⚡ UI/UX design
-            </span>
-            <span className="px-4 py-1.5 rounded-lg text-sm font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
-              💻 Vibe Coding
-            </span>
-            <span className="px-4 py-1.5 rounded-lg text-sm font-semibold bg-violet-500/10 text-violet-300 border border-violet-500/30 shadow-[0_0_10px_rgba(139,92,246,0.1)]">
-              🏆 Prize Pool
-            </span>
-          </motion.div>
-        </motion.section>
-
-        {/* Right Side: Redirect Widget */}
-        <motion.section 
-          initial={{ opacity: 0, x: 50, scale: 0.9 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, type: "spring", stiffness: 100 }}
-          className="lg:col-span-5 w-full max-w-md"
-        >
-          <div className="glass-panel rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-[0_0_40px_rgba(16,185,129,0.15)] border border-emerald-500/20 relative overflow-hidden group">
-            {/* Background spotlight */}
-            <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/20 transition-colors duration-500"></div>
-
-            {/* Title / Status */}
-            <div className="flex flex-col gap-1.5 items-center text-center relative z-10">
-              <span className="text-xs font-semibold uppercase tracking-widest text-emerald-400 font-space">
-                {isRedirecting ? "Connecting to form..." : "Registration Portal"}
+          <motion.div {...animProps} className="h-10 mt-2 flex justify-center items-center gap-3 text-2xl md:text-3xl font-black text-emerald-400 font-space tracking-wider">
+            {typingWords.map((word, i) => (
+              <span key={i} className={`transition-opacity duration-300 ${i < typingIndex ? 'opacity-100' : 'opacity-20'}`}>
+                {word}
               </span>
-              <h3 className="text-xl font-bold text-white">
-                {isRedirecting ? "Redirecting Now" : `Redirecting in ${timeLeft}s...`}
-              </h3>
-            </div>
+            ))}
+            <motion.span 
+              animate={{ opacity: [0, 1, 0] }} 
+              transition={{ repeat: Infinity, duration: 0.8 }}
+              className="inline-block w-3 h-8 bg-emerald-400 ml-1"
+            />
+          </motion.div>
 
-            {/* Circular Countdown Progress */}
-            <div className="flex justify-center items-center py-4 relative z-10">
-              <svg className="w-32 h-32 transform -rotate-90">
-                <circle
-                  cx="64"
-                  cy="64"
-                  r={radius}
-                  className="stroke-slate-800/50"
-                  strokeWidth="8"
-                  fill="transparent"
-                />
-                <circle
-                  cx="64"
-                  cy="64"
-                  r={radius}
-                  className="stroke-emerald-400 countdown-ring"
-                  strokeWidth="8"
-                  fill="transparent"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  style={{ filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.5))' }}
-                />
-              </svg>
-
-              {/* Central text overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center font-space">
-                {timeLeft > 0 ? (
-                  <>
-                    <motion.span 
-                      key={timeLeft}
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="text-4xl font-bold text-white tracking-tighter"
-                    >
-                      {timeLeft}
-                    </motion.span>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mt-1">
-                      secs
-                    </span>
-                  </>
-                ) : (
-                  <Sparkles className="h-10 w-10 text-emerald-400 animate-spin" />
-                )}
-              </div>
-            </div>
-
-            {/* Action Bar */}
-            <div className="flex flex-col gap-3 relative z-10">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleProceed}
-                disabled={isRedirecting}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.4)] group cursor-pointer border-none"
-              >
-                {isRedirecting ? (
-                  <>
-                    <RefreshCw className="h-5 w-5 animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    Register Now
-                    <ArrowRight className="h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </motion.button>
-
-              <div className="flex gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.02, backgroundColor: "rgba(30, 41, 59, 0.8)" }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={toggleTimer}
-                  disabled={timeLeft <= 0}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-200 text-sm font-semibold transition-all cursor-pointer"
-                >
-                  {isActive ? (
-                    <>
-                      <Pause className="h-4 w-4 text-amber-400" />
-                      Cancel Redirect
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-4 w-4 text-emerald-400" />
-                      Resume Timer
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            </div>
-            
-            {!isActive && (
-              <motion.p 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="text-xs text-amber-400 text-center font-medium mt-[-5px]"
-              >
-                Redirect cancelled. Take your time to explore the event details!
-              </motion.p>
-            )}
-          </div>
+          <motion.div {...animProps} className="mt-6 flex flex-col items-center">
+            <button
+              onClick={handleProceed}
+              className="group relative flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 font-black text-lg py-4 px-10 rounded-full shadow-[0_0_30px_rgba(16,185,129,0.5)] cursor-pointer hover:bg-emerald-400 transition-all overflow-hidden"
+            >
+              <div className="absolute inset-0 w-full h-full bg-white/20 animate-pulse-slow"></div>
+              <span className="relative z-10 flex items-center gap-2">
+                Register Now
+                <ArrowRight className="h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
+              </span>
+            </button>
+          </motion.div>
         </motion.section>
-      </main>
 
-      {/* Grid of details */}
-      <motion.section 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-6xl mx-auto mt-24 relative z-10"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Date & Time */}
-          <motion.div variants={hoverScale} whileHover="hover" whileTap="tap" className="glass-card rounded-2xl p-6 flex items-start gap-4 border border-white/5 hover:border-emerald-500/30">
-            <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+        {/* 2. Countdown / Redirect Notice */}
+        <AnimatePresence>
+          {!isCancelled && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+              className="max-w-xl mx-auto w-full"
+            >
+              <div className="glass-panel rounded-2xl p-4 md:p-6 border border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.1)] flex flex-col items-center text-center gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative flex items-center justify-center w-10 h-10 bg-slate-800 rounded-full border-2 border-amber-400 text-amber-400 font-bold text-lg font-space">
+                    {timeLeft > 0 ? timeLeft : <Sparkles className="h-5 w-5 animate-spin" />}
+                  </div>
+                  <h3 className="text-slate-200 font-semibold text-sm md:text-base">
+                    {isRedirecting ? "Redirecting to registration..." : `You will be redirected to registration in ${timeLeft} seconds.`}
+                  </h3>
+                </div>
+                <div className="flex gap-3 w-full">
+                  <button
+                    onClick={handleProceed}
+                    className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl transition-colors text-sm"
+                  >
+                    Register Now
+                  </button>
+                  <button
+                    onClick={cancelRedirect}
+                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-bold py-2.5 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Stay on This Page
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 3. Stats Strip */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="w-full flex flex-wrap justify-center gap-3 md:gap-6 py-6 border-y border-slate-800/60 bg-slate-900/30"
+        >
+          {[
+            { icon: Clock, text: "100 Minutes" },
+            { icon: Ticket, text: "₹30 Registration" },
+            { icon: ShieldCheck, text: "Open to All OGI Students" },
+            { icon: Trophy, text: "3 Winners" },
+            { icon: Award, text: "E-Certificate" }
+          ].map((stat, i) => (
+            <div key={i} className="flex items-center gap-2 text-slate-300 font-semibold text-sm">
+              <stat.icon className="h-4 w-4 text-emerald-400" />
+              {stat.text}
+            </div>
+          ))}
+        </motion.div>
+
+        {/* 4. Event Details */}
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
+          <div className="glass-card rounded-2xl p-6 flex items-start gap-4 border border-white/5">
+            <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shrink-0">
               <Calendar className="h-6 w-6" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest font-space">
-                When
-              </span>
-              <p className="text-base font-bold text-slate-100">
-                {eventData.date}
-              </p>
-              <p className="text-sm text-emerald-400 font-semibold">
-                {eventData.time}
-              </p>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest font-space">When</span>
+              <p className="text-base font-bold text-slate-100">{eventData.date}</p>
+              <p className="text-sm text-emerald-400 font-semibold">{eventData.time}</p>
             </div>
-          </motion.div>
-
-          {/* Card 2: Venue */}
-          <motion.div variants={hoverScale} whileHover="hover" whileTap="tap" className="glass-card rounded-2xl p-6 flex items-start gap-4 border border-white/5 hover:border-cyan-500/30">
-            <div className="h-12 w-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/20 shrink-0 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+          </div>
+          <div className="glass-card rounded-2xl p-6 flex items-start gap-4 border border-white/5">
+            <div className="h-12 w-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/20 shrink-0">
               <MapPin className="h-6 w-6" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest font-space">
-                Where
-              </span>
-              <p className="text-base font-bold text-slate-100">
-                {eventData.venue}
-              </p>
-              <p className="text-sm text-cyan-400 font-semibold">
-                {eventData.venueDetails}
-              </p>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest font-space">Where</span>
+              <p className="text-base font-bold text-slate-100">{eventData.venue}</p>
+              <p className="text-sm text-cyan-400 font-semibold">{eventData.venueDetails}</p>
             </div>
-          </motion.div>
-
-          {/* Card 3: Fee & Eligibility */}
-          <motion.div variants={hoverScale} whileHover="hover" whileTap="tap" className="glass-card rounded-2xl p-6 flex items-start gap-4 border border-white/5 hover:border-violet-500/30">
-            <div className="h-12 w-12 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 border border-violet-500/20 shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
+          </div>
+          <div className="glass-card rounded-2xl p-6 flex items-start gap-4 border border-white/5">
+            <div className="h-12 w-12 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 border border-violet-500/20 shrink-0">
               <Ticket className="h-6 w-6" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest font-space">
-                Entry
-              </span>
-              <p className="text-base font-bold text-slate-100">
-                Fee: <span className="text-violet-400 font-space">{eventData.fee}</span>
-              </p>
-              <p className="text-sm text-slate-300 font-medium">
-                {eventData.eligibility}
-              </p>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest font-space">Entry</span>
+              <p className="text-base font-bold text-slate-100">Fee: <span className="text-violet-400">{eventData.fee}</span></p>
+              <p className="text-sm text-slate-300 font-medium">{eventData.eligibility}</p>
             </div>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* Challenge Section */}
-      <motion.section 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-6xl mx-auto mt-24 relative z-10"
-      >
-        <div className="glass-panel rounded-3xl p-8 md:p-12 border border-slate-700/50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
-          
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-cyan-500/20 text-cyan-400">
-              <BrainCircuit className="h-6 w-6" />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white">The Challenge</h2>
           </div>
-          
-          <p className="text-slate-300 text-lg mb-8 max-w-3xl leading-relaxed">
+        </motion.section>
+
+        {/* 5. Challenge Section */}
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="glass-panel rounded-3xl p-8 border border-cyan-500/20 relative overflow-hidden"
+        >
+          <h2 className="text-3xl font-bold text-white mb-4">The Challenge</h2>
+          <p className="text-slate-300 text-lg mb-8 max-w-3xl">
             Participants must design, build, and deploy a complete website using AI-powered Vibe Coding tools. A <span className="text-cyan-400 font-bold">surprise problem statement</span> will be revealed during the event.
           </p>
 
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-1 w-full glass-card p-6 rounded-2xl border border-white/5">
-              <h3 className="text-emerald-400 font-space font-bold mb-4 flex items-center gap-2">
-                <Code2 className="h-5 w-5" /> Allowed Platforms
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {["ChatGPT", "Cursor", "Bolt", "Claude", "Gemini", "Lovable", "Windsurf", "Other AI tools"].map((tool, i) => (
-                  <span key={i} className="px-3 py-1.5 rounded-md bg-slate-800/80 text-slate-200 text-sm border border-slate-700">
-                    {tool}
-                  </span>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex-1 w-full glass-card p-6 rounded-2xl border border-white/5 flex flex-col justify-center items-center text-center h-full min-h-[140px]">
-              <h3 className="text-slate-400 font-space font-bold mb-2 uppercase tracking-widest text-sm">Time Limit</h3>
-              <div className="text-5xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                100
-              </div>
-              <p className="text-amber-400/80 font-bold tracking-widest uppercase mt-1">Minutes</p>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Prizes & Why Participate */}
-      <motion.section 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-6xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10"
-      >
-        {/* Prizes */}
-        <div className="glass-panel rounded-3xl p-8 border border-amber-500/20 relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-amber-500/5 blur-3xl pointer-events-none"></div>
-          
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-400">
-              <Trophy className="h-6 w-6" />
-            </div>
-            <h2 className="text-2xl font-bold text-white">Prize Pool</h2>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            {eventData.prizes.map((prize, idx) => (
-              <motion.div 
-                key={idx}
-                whileHover={{ scale: 1.02, x: 5 }}
-                className="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-slate-700/50"
-              >
-                <div className="flex items-center gap-4">
-                  <span className="text-3xl">{prize.icon}</span>
-                  <span className="font-bold text-slate-200">{prize.position}</span>
+          <div className="mb-10">
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Development Workflow</h3>
+            <div className="flex flex-wrap items-center gap-2 md:gap-4 font-space font-bold text-sm md:text-base">
+              {eventData.workflow?.map((step, idx) => (
+                <div key={idx} className="flex items-center gap-2 md:gap-4">
+                  <div className="px-4 py-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    {step}
+                  </div>
+                  {idx < eventData.workflow!.length - 1 && (
+                    <ArrowRight className="h-4 w-4 text-slate-500" />
+                  )}
                 </div>
-                <span className="text-amber-400 font-semibold text-sm">{prize.reward}</span>
-              </motion.div>
-            ))}
-            <div className="mt-2 text-center p-3 rounded-xl bg-slate-800/30 border border-slate-700/30">
-              <p className="text-slate-300 text-sm">{eventData.participationCertificate}</p>
+              ))}
             </div>
           </div>
-        </div>
 
-        {/* Why Participate */}
-        <div className="glass-panel rounded-3xl p-8 border border-violet-500/20 relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-violet-500/5 blur-3xl pointer-events-none"></div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Supported Tools</h3>
+            <div className="flex flex-wrap gap-3">
+              {eventData.tools?.map((tool, idx) => (
+                <span key={idx} className="px-4 py-2 rounded-xl bg-slate-800/80 text-slate-200 text-sm font-semibold border border-slate-700">
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        {/* 6. Prizes Section */}
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">Prize Pool</h2>
           
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 rounded-lg bg-violet-500/20 text-violet-400">
-              <Rocket className="h-6 w-6" />
-            </div>
-            <h2 className="text-2xl font-bold text-white">Why Participate?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {eventData.prizes.map((prize, idx) => {
+              const isFirst = idx === 0;
+              return (
+                <motion.div 
+                  key={idx}
+                  variants={prefersReducedMotion ? {} : hoverScale}
+                  whileHover="hover"
+                  className={`glass-card rounded-2xl p-8 flex flex-col items-center text-center border ${isFirst ? 'border-amber-500/40 shadow-[0_0_30px_rgba(245,158,11,0.15)]' : 'border-slate-700/50'}`}
+                >
+                  <span className="text-5xl mb-4">{prize.icon}</span>
+                  <h3 className={`text-xl font-bold mb-2 ${isFirst ? 'text-amber-400' : 'text-slate-200'}`}>
+                    {prize.position}
+                  </h3>
+                  <div className="flex flex-col gap-1 text-slate-300 font-medium">
+                    {prize.reward.split(' + ').map((item, i) => (
+                      <span key={i} className="flex items-center justify-center gap-1.5">
+                        <Check className="h-3 w-3 text-emerald-400" /> {item}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
 
-          <ul className="flex flex-col gap-5">
-            {eventData.benefits.map((benefit, idx) => (
-              <motion.li 
-                key={idx}
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                viewport={{ once: true }}
-                className="flex items-start gap-3"
-              >
-                <div className="mt-1 p-1 rounded-full bg-emerald-500/20 text-emerald-400 shrink-0">
-                  <Check className="h-3 w-3" />
-                </div>
-                <span className="text-slate-200 font-medium leading-tight">{benefit}</span>
-              </motion.li>
-            ))}
-          </ul>
-        </div>
-      </motion.section>
+          <div className="glass-panel rounded-2xl p-6 text-center border border-emerald-500/30 glow-emerald">
+            <h3 className="text-lg font-bold text-emerald-400 mb-2 flex items-center justify-center gap-2">
+              <Award className="h-5 w-5" /> Participation Certificate
+            </h3>
+            <p className="text-slate-300 font-medium">{eventData.participationCertificate}</p>
+          </div>
+        </motion.section>
 
-      {/* Footer / Contacts */}
-      <footer className="w-full max-w-6xl mx-auto mt-24 pt-8 border-t border-slate-800 flex flex-col md:flex-row gap-8 items-center justify-between relative z-10 pb-8">
+        {/* 7. Why Participate Cards */}
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">Why Participate?</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {eventData.benefits.map((benefit: any, idx: number) => {
+              const IconComp = IconMap[benefit.icon] || Sparkles;
+              return (
+                <motion.div 
+                  key={idx}
+                  variants={prefersReducedMotion ? {} : hoverScale}
+                  whileHover="hover"
+                  className="glass-card p-5 rounded-2xl border border-white/5 flex flex-col items-start gap-3"
+                >
+                  <div className="p-2.5 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                    <IconComp className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-slate-200 font-bold leading-snug">{benefit.title}</h3>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.section>
+
+        {/* 8. Registration CTA */}
+        <motion.section 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="glass-panel rounded-3xl p-10 md:p-16 text-center border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.1)] relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none"></div>
+          <h2 className="text-3xl md:text-5xl font-black text-white mb-4">Ready to Build the Future?</h2>
+          <p className="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">
+            Secure your spot in the ultimate Vibe Coding challenge. Show off your prompt engineering and design skills to win amazing prizes.
+          </p>
+          <button
+            onClick={handleProceed}
+            className="group inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xl py-4 px-10 rounded-full shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all"
+          >
+            Register Now
+            <ArrowRight className="h-6 w-6 transform group-hover:translate-x-1 transition-transform" />
+          </button>
+        </motion.section>
+
+      </main>
+
+      {/* 9. Footer */}
+      <footer className="w-full max-w-6xl mx-auto mt-20 pt-8 border-t border-slate-800 flex flex-col md:flex-row gap-8 items-center justify-between relative z-10 pb-8">
         <div className="flex flex-col gap-2 text-center md:text-left">
-          <h4 className="text-lg font-bold text-white">
-            {eventData.contact.club}
-          </h4>
-          <p className="text-slate-400 text-sm">
-            {eventData.contact.college}
-          </p>
-          <p className="text-emerald-400 font-space text-xs tracking-widest uppercase mt-1">
-            {eventData.tagline}
-          </p>
+          <h4 className="text-lg font-bold text-white">{eventData.contact.club}</h4>
+          <p className="text-slate-400 text-sm">{eventData.contact.college}</p>
         </div>
 
         <div className="flex flex-col gap-4 items-center md:items-end">
-          <div className="flex items-center gap-4 text-sm text-slate-300">
-            <a href={`tel:${eventData.contact.phone}`} className="flex items-center gap-2 hover:text-emerald-400 transition-colors">
-              <Phone className="h-4 w-4 text-emerald-400" />
-              {eventData.contact.phone}
+          <div className="flex flex-wrap justify-center items-center gap-4 text-sm text-slate-300">
+            <a href={`tel:${eventData.contact.phone}`} className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors">
+              <Phone className="h-4 w-4 text-emerald-400" /> {eventData.contact.phone}
             </a>
-            <span className="text-slate-700">|</span>
-            <a href={`mailto:${eventData.contact.email}`} className="flex items-center gap-2 hover:text-cyan-400 transition-colors">
-              <Mail className="h-4 w-4 text-cyan-400" />
-              Email Us
+            <span className="hidden sm:inline text-slate-700">|</span>
+            <a href={`mailto:${eventData.contact.email}`} className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors">
+              <Mail className="h-4 w-4 text-cyan-400" /> Email Us
             </a>
           </div>
 
@@ -578,17 +503,23 @@ export default function Home() {
               className="flex items-center gap-2 py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-all cursor-pointer mr-2"
             >
               {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4 text-emerald-400" />}
-              {copied ? "Copied!" : "Share Event"}
+              {copied ? "Copied!" : "Share"}
             </button>
-            <a href={eventData.contact.instagram} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-pink-500 hover:bg-slate-700 transition-all border border-slate-700">
-              <Instagram className="h-4.5 w-4.5" />
+            <a href={eventData.contact.instagram} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-pink-500 border border-slate-700">
+              <Instagram className="h-4 w-4" />
             </a>
-            <a href={eventData.contact.github} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-all border border-slate-700">
-              <Github className="h-4.5 w-4.5" />
+            <a href={eventData.contact.github} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white border border-slate-700">
+              <Github className="h-4 w-4" />
             </a>
           </div>
         </div>
       </footer>
     </div>
   );
+}
+
+// Ensure AnimatePresence is available for dynamic exit animations
+function AnimatePresence({ children }: { children: React.ReactNode }) {
+  const ReactAnimatePresence = require("framer-motion").AnimatePresence;
+  return <ReactAnimatePresence>{children}</ReactAnimatePresence>;
 }

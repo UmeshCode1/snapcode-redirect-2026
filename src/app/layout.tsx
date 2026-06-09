@@ -15,11 +15,11 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "SNAPCODE 2026 | Frontend Design Challenge",
-  description: "Official registration and redirect page for SNAPCODE 2026. Hosted by the AI & Machine Learning Club, Oriental College of Technology, Bhopal.",
+  title: "SNAPCODE 2026 | Frontend Design Challenge Using Vibe Coding",
+  description: "Join SNAPCODE 2026, an AI-powered frontend design challenge organized by the AI & Machine Learning Club. Build, design, and deploy a website in 100 minutes using modern AI development tools.",
   openGraph: {
-    title: "SNAPCODE 2026 | Frontend Design Challenge",
-    description: "Official registration and redirect page for SNAPCODE 2026. Hosted by the AI & Machine Learning Club, Oriental College of Technology, Bhopal.",
+    title: "SNAPCODE 2026 | Frontend Design Challenge Using Vibe Coding",
+    description: "Join SNAPCODE 2026, an AI-powered frontend design challenge organized by the AI & Machine Learning Club. Build, design, and deploy a website in 100 minutes using modern AI development tools.",
     url: "https://snapcode.aimlcluboct.in",
     siteName: "SNAPCODE 2026",
     images: [
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SNAPCODE 2026 | Frontend Design Challenge",
-    description: "Official registration and redirect page for SNAPCODE 2026. Hosted by the AI & Machine Learning Club, Oriental College of Technology, Bhopal.",
+    title: "SNAPCODE 2026 | Frontend Design Challenge Using Vibe Coding",
+    description: "Join SNAPCODE 2026, an AI-powered frontend design challenge organized by the AI & Machine Learning Club. Build, design, and deploy a website in 100 minutes using modern AI development tools.",
     images: ["/assets/og-image.png"],
   },
 };
