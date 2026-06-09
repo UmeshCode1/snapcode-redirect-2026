@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { eventData } from "@/data/event";
 import { ArrowRight, Sparkles } from "lucide-react";
@@ -21,29 +20,8 @@ export default function SpotlightHero() {
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-16 px-4 z-10">
       
-      {/* Logos */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="flex items-center gap-6 mb-12"
-      >
-        <Image
-          src="/assets/logo-college.png"
-          alt="OCT Logo"
-          width={180}
-          height={60}
-          className="h-12 w-auto object-contain"
-        />
-        <div className="w-px h-10 bg-slate-700"></div>
-        <Image
-          src="/assets/logo-club.png"
-          alt="AIML Club Logo"
-          width={60}
-          height={60}
-          className="h-14 w-auto object-contain glow-emerald"
-        />
-      </motion.div>
+      {/* Minimal Header Spacer */}
+      <div className="h-6"></div>
 
       {/* Main Content */}
       <motion.div

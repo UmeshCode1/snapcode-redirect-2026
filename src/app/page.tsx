@@ -20,6 +20,7 @@ import {
   Target,
   Award
 } from "lucide-react";
+import Navbar from "@/components/Navbar";
 import SpotlightHero from "@/components/SpotlightHero";
 import Modals from "@/components/Modals";
 import AnimatedCounter from "@/components/AnimatedCounter";
@@ -117,6 +118,7 @@ export default function Home() {
       ></div>
 
       <Modals />
+      <Navbar />
       <SpotlightHero />
 
       {/* Floating CTA */}
@@ -167,10 +169,11 @@ export default function Home() {
 
         {/* Visual Workflow Challenge */}
         <motion.section 
+          id="workflow"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="text-center scroll-mt-24"
         >
           <h2 className="text-3xl md:text-5xl font-black text-white mb-12">The <span className="text-emerald-400">Vibe Coding</span> Workflow</h2>
           <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mb-16">
@@ -206,9 +209,11 @@ export default function Home() {
 
         {/* Timeline */}
         <motion.section 
+          id="timeline"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
+          className="scroll-mt-24"
         >
           <h2 className="text-3xl md:text-5xl font-black text-white mb-12 text-center">Event <span className="text-violet-400">Timeline</span></h2>
           <div className="relative max-w-2xl mx-auto">
@@ -239,10 +244,11 @@ export default function Home() {
 
         {/* Prizes Section - Podium Layout */}
         <motion.section 
+          id="prizes"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="pt-12"
+          className="pt-12 scroll-mt-24"
         >
           <h2 className="text-3xl md:text-5xl font-black text-white mb-16 text-center">The <span className="text-amber-400">Prizes</span></h2>
           
@@ -296,9 +302,11 @@ export default function Home() {
 
         {/* Why Participate Features */}
         <motion.section 
+          id="why-join"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          className="scroll-mt-24"
         >
           <h2 className="text-3xl md:text-5xl font-black text-white mb-12 text-center">Why <span className="text-cyan-400">Participate?</span></h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -324,10 +332,11 @@ export default function Home() {
 
         {/* Social Proof Placeholder */}
         <motion.section 
+          id="community"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="text-center scroll-mt-24"
         >
           <h2 className="text-3xl md:text-5xl font-black text-white mb-12">The <span className="text-emerald-400">Community</span></h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
