@@ -41,6 +41,23 @@ export const eventData = {
   workflow: ["Idea", "Prompt", "Build", "Refine", "Deploy"],
   participationCertificate: "E-Certificate for all participants",
   seatsInfo: "⏳ Limited Seats Available!",
+  timeline: [
+    { time: "09:00 AM", title: "Registration", description: "Get your badges and settle in." },
+    { time: "10:00 AM", title: "Theme Reveal", description: "The surprise problem statement is announced." },
+    { time: "10:15 AM", title: "Development Phase", description: "100 minutes of pure Vibe Coding." },
+    { time: "11:55 AM", title: "Submission", description: "Deploy to Vercel and submit URLs." },
+    { time: "12:30 PM", title: "Evaluation", description: "Judges review the UI/UX and code quality." },
+    { time: "02:00 PM", title: "Winner Announcement", description: "Prize distribution and closing ceremony." }
+  ],
+  testimonials: [
+    { name: "Placeholder Student", role: "Frontend Dev", quote: "I've never built a website this fast. AI tools changed everything!" },
+    { name: "Placeholder Dev", role: "UI Designer", quote: "The energy was insane. Vibe coding is the future of hackathons." }
+  ],
+  gallery: [
+    { src: "/assets/placeholder-1.jpg", alt: "Event Image 1" },
+    { src: "/assets/placeholder-2.jpg", alt: "Event Image 2" },
+    { src: "/assets/placeholder-3.jpg", alt: "Event Image 3" }
+  ],
   contact: {
     club: "AI & Machine Learning Club",
     college: "Oriental College of Technology, Bhopal",

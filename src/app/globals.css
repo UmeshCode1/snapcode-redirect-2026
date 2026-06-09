@@ -16,14 +16,40 @@
 
 /* Premium Cosmic/Space Background */
 body {
-  background: 
-    radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.12) 0%, transparent 60%),
-    radial-gradient(circle at 5% 25%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 95% 75%, rgba(6, 182, 212, 0.06) 0%, transparent 45%),
-    #020617;
+  background-color: #020617;
   color: var(--foreground);
   font-family: var(--font-plus-jakarta), sans-serif;
   overflow-x: hidden;
+}
+
+/* Aurora Background */
+.bg-aurora {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -20;
+  background: 
+    radial-gradient(ellipse at top left, rgba(139, 92, 246, 0.15), transparent 40%),
+    radial-gradient(ellipse at top right, rgba(16, 185, 129, 0.15), transparent 40%),
+    radial-gradient(ellipse at bottom center, rgba(6, 182, 212, 0.1), transparent 50%);
+  filter: blur(60px);
+  animation: aurora-shift 15s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-shift {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.1) translate(-2%, 2%); }
+}
+
+/* Mouse Spotlight */
+.spotlight {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);
 }
 
 /* Custom Grid background animation overlay */
@@ -36,70 +62,114 @@ body {
 
 /* Glassmorphism styling helpers */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.25);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(30, 41, 59, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .glass-card:hover {
-  background: rgba(30, 41, 59, 0.35);
-  border-color: rgba(16, 185, 129, 0.2);
-  transform: translateY(-2px);
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+  transform: translateY(-4px) scale(1.02);
 }
 
 /* Neon glow helper classes */
 .glow-emerald {
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
 }
 
 .glow-violet {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.2);
 }
 
 .glow-text-emerald {
-  text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
 }
 
 .glow-text-violet {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+  text-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
 }
 
 /* Micro-animations */
 @keyframes float {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-15px) rotate(2deg);
   }
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 8s ease-in-out infinite;
 }
 
 @keyframes pulse-slow {
   0%, 100% {
-    opacity: 0.5;
+    opacity: 0.3;
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: scale(1.02);
+    opacity: 0.6;
+    transform: scale(1.05);
   }
 }
 
 .animate-pulse-slow {
-  animation: pulse-slow 10s ease-in-out infinite;
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+/* Animated Gradient Border */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotation {
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
+}
+
+.animated-border {
+  position: relative;
+  border-radius: inherit;
+}
+
+.animated-border::before,
+.animated-border::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  background: conic-gradient(
+    from var(--gradient-angle),
+    #10b981,
+    #06b6d4,
+    #8b5cf6,
+    #10b981
+  );
+  border-radius: inherit;
+  animation: rotation 4s linear infinite;
+}
+
+.animated-border::after {
+  filter: blur(1.5rem);
 }
 
 /* Custom interactive ring stroke animation helper */

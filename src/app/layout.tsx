@@ -27,11 +27,15 @@ export const metadata: Metadata = {
         url: "/assets/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SNAPCODE 2026 Event Details",
+        alt: "SNAPCODE 2026 Banner",
       },
     ],
-    locale: "en-IN",
+    locale: "en_IN",
     type: "website",
+  },
+  icons: {
+    icon: "/assets/logo-club.png",
+    apple: "/assets/logo-club.png",
   },
   twitter: {
     card: "summary_large_image",
