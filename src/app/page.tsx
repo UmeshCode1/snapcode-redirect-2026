@@ -34,7 +34,7 @@ const INITIAL_TIME = 5;
 // Animation Variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
+  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } }
 };
 
 const staggerContainer = {
@@ -48,7 +48,7 @@ const staggerContainer = {
 };
 
 const hoverScale = {
-  hover: { scale: 1.05, transition: { type: "spring", stiffness: 300, damping: 10 } },
+  hover: { scale: 1.05, transition: { type: "spring" as const, stiffness: 300, damping: 10 } },
   tap: { scale: 0.95 }
 };
 
