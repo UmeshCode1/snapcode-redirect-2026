@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { eventData } from "@/data/event";
 import {
   Calendar,
@@ -26,8 +26,7 @@ import {
   Clock,
   Award,
   ShieldCheck,
-  X,
-  Play
+  X
 } from "lucide-react";
 
 const INITIAL_TIME = 5;
@@ -54,7 +53,7 @@ const hoverScale = {
 };
 
 // Map string icon names to Lucide components safely
-const IconMap: Record<string, any> = {
+const IconMap: Record<string, React.ElementType> = {
   BrainCircuit,
   Code2,
   Sparkles,
@@ -151,6 +150,17 @@ export default function Home() {
 
   const animProps = prefersReducedMotion ? {} : { variants: fadeInUp };
 
+  const [particles] = useState(() => 
+    [...Array(6)].map(() => ({
+      width: Math.random() * 100 + 50 + 'px',
+      height: Math.random() * 100 + 50 + 'px',
+      left: Math.random() * 100 + '%',
+      top: Math.random() * 100 + '%',
+      animationDelay: `-${Math.random() * 10}s`,
+      animationDuration: `${Math.random() * 5 + 5}s`
+    }))
+  );
+
   return (
     <div className="relative min-h-screen w-full bg-grid-pattern pb-16 pt-6 px-4 md:px-8 flex flex-col font-sans overflow-x-hidden">
       
@@ -184,18 +194,11 @@ export default function Home() {
         {/* Floating CSS Particles (Lightweight) */}
         {!prefersReducedMotion && (
           <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-            {[...Array(6)].map((_, i) => (
+            {particles.map((style, i) => (
               <div 
                 key={i} 
                 className={`absolute rounded-full bg-emerald-500/20 blur-xl animate-float`}
-                style={{
-                  width: Math.random() * 100 + 50 + 'px',
-                  height: Math.random() * 100 + 50 + 'px',
-                  left: Math.random() * 100 + '%',
-                  top: Math.random() * 100 + '%',
-                  animationDelay: `${i * -2}s`,
-                  animationDuration: `${Math.random() * 5 + 5}s`
-                }}
+                style={style}
               />
             ))}
           </div>
@@ -437,7 +440,7 @@ export default function Home() {
         >
           <h2 className="text-3xl font-bold text-white mb-8 text-center">Why Participate?</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {eventData.benefits.map((benefit: any, idx: number) => {
+            {eventData.benefits.map((benefit: { title: string, icon: string }, idx: number) => {
               const IconComp = IconMap[benefit.icon] || Sparkles;
               return (
                 <motion.div 
@@ -516,10 +519,4 @@ export default function Home() {
       </footer>
     </div>
   );
-}
-
-// Ensure AnimatePresence is available for dynamic exit animations
-function AnimatePresence({ children }: { children: React.ReactNode }) {
-  const ReactAnimatePresence = require("framer-motion").AnimatePresence;
-  return <ReactAnimatePresence>{children}</ReactAnimatePresence>;
 }
