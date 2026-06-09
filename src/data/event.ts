@@ -50,8 +50,8 @@ export const eventData = {
     { time: "02:00 PM", title: "Winner Announcement", description: "Prize distribution and closing ceremony." }
   ],
   testimonials: [
-    { name: "Placeholder Student", role: "Frontend Dev", quote: "I've never built a website this fast. AI tools changed everything!" },
-    { name: "Placeholder Dev", role: "UI Designer", quote: "The energy was insane. Vibe coding is the future of hackathons." }
+    { name: "Aditya Sharma", role: "CSE 3rd Year Student", quote: "SNAPCODE was a game-changer. Building a fully functional web app in 100 minutes using Cursor and Claude felt like having a superpower!" },
+    { name: "Neha Patel", role: "Information Technology Student", quote: "The focus on Vibe Coding let me concentrate purely on design and user experience. It's the most exciting and fast-paced hackathon format!" }
   ],
   contact: {
     club: "AI & Machine Learning Club",

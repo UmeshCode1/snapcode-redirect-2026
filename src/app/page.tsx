@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { eventData } from "@/data/event";
 import {
   Calendar,
@@ -18,33 +18,14 @@ import {
   Palette,
   Users,
   Target,
-  Award
+  Award,
+  Clock,
+  ArrowRight
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import SpotlightHero from "@/components/SpotlightHero";
 import Modals from "@/components/Modals";
 import AnimatedCounter from "@/components/AnimatedCounter";
-
-// Animation Variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } }
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const hoverScale = {
-  hover: { scale: 1.05, transition: { type: "spring" as const, stiffness: 300, damping: 10 } },
-  tap: { scale: 0.95 }
-};
 
 const IconMap: Record<string, React.ElementType> = {
   BrainCircuit,
@@ -57,65 +38,36 @@ const IconMap: Record<string, React.ElementType> = {
   Target
 };
 
-function TiltCard({ children, className }: { children: React.ReactNode, className?: string }) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 20 });
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    x.set(mouseX / width - 0.5);
-    y.set(mouseY / height - 0.5);
-  };
-
-  return (
-    <motion.div
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-      className={className}
-    >
-      <div style={{ transform: "translateZ(20px)" }} className="h-full w-full">
-        {children}
-      </div>
-    </motion.div>
-  );
-}
-
 export default function Home() {
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    
-    // Spotlight follow effect
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   if (!mounted) return null;
 
+  const animationProps = (delay = 0) => {
+    if (prefersReducedMotion) {
+      return {
+        initial: { opacity: 1 },
+        animate: { opacity: 1 }
+      };
+    }
+    return {
+      initial: { opacity: 0, y: 15 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, margin: "-80px" },
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const, delay }
+    };
+  };
+
   return (
-    <div className="relative min-h-screen w-full font-sans overflow-x-hidden text-slate-200">
-      <div className="bg-aurora"></div>
-      <div 
-        className="spotlight"
-        style={{ '--x': `${mousePos.x}px`, '--y': `${mousePos.y}px` } as React.CSSProperties}
-      ></div>
+    <div className="relative min-h-screen w-full font-sans overflow-x-hidden text-zinc-200 bg-black selection:bg-zinc-800 selection:text-zinc-100">
+      {/* Handcrafted Subtle Dot Grid */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none z-0"></div>
 
       <Modals />
       <Navbar />
@@ -128,81 +80,105 @@ export default function Home() {
         transition={{ delay: 2, duration: 0.8 }}
         className="fixed bottom-6 right-6 z-40 hidden md:block"
       >
-        <a href={eventData.registrationUrl} className="animated-border rounded-full inline-block">
-          <button className="px-6 py-3 bg-slate-900/80 backdrop-blur-md rounded-full font-bold text-white border border-transparent shadow-2xl hover:scale-105 transition-transform">
-            Register Now
-          </button>
+        <a 
+          href={eventData.registrationUrl} 
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-zinc-100 hover:bg-white text-black font-bold text-xs shadow-2xl transition-all hover:scale-105 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500"
+          aria-label="Register for SNAPCODE 2026"
+        >
+          Register Now <ArrowRight className="h-3.5 w-3.5" />
         </a>
       </motion.div>
 
-      <main className="w-full max-w-6xl mx-auto flex-1 flex flex-col gap-24 relative z-10 px-4 md:px-8 pb-32">
+      <main className="w-full max-w-6xl mx-auto flex-1 flex flex-col gap-28 relative z-10 px-6 md:px-8 pb-32">
         
-        {/* Stats Strip */}
+        {/* Stats Grid */}
         <motion.section 
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-700/50 backdrop-blur-xl"
+          {...animationProps()}
+          className="grid grid-cols-2 md:grid-cols-5 gap-px bg-zinc-900 border border-zinc-900 rounded-xl overflow-hidden"
+          aria-label="Event Key Stats"
         >
-          <motion.div variants={fadeInUp} className="text-center">
-            <h4 className="text-4xl font-black text-white mb-1"><AnimatedCounter from={0} to={100} /></h4>
-            <p className="text-sm text-slate-400 font-medium">Minutes Challenge</p>
-          </motion.div>
-          <motion.div variants={fadeInUp} className="text-center">
-            <h4 className="text-4xl font-black text-white mb-1">₹<AnimatedCounter from={0} to={30} /></h4>
-            <p className="text-sm text-slate-400 font-medium">Registration Fee</p>
-          </motion.div>
-          <motion.div variants={fadeInUp} className="text-center">
-            <h4 className="text-4xl font-black text-white mb-1"><AnimatedCounter from={0} to={3} /></h4>
-            <p className="text-sm text-slate-400 font-medium">Winning Positions</p>
-          </motion.div>
-          <motion.div variants={fadeInUp} className="text-center">
-            <h4 className="text-4xl font-black text-white mb-1"><AnimatedCounter from={0} to={100} />%</h4>
-            <p className="text-sm text-slate-400 font-medium">Certificates</p>
-          </motion.div>
-          <motion.div variants={fadeInUp} className="text-center col-span-2 md:col-span-1">
-            <h4 className="text-4xl font-black text-white mb-1">OGI</h4>
-            <p className="text-sm text-slate-400 font-medium">Students Eligible</p>
-          </motion.div>
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+            <Clock className="h-4 w-4 text-zinc-500 mb-3" />
+            <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
+              <AnimatedCounter from={0} to={100} />
+            </h4>
+            <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Minutes Challenge</p>
+          </div>
+          
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+            <Ticket className="h-4 w-4 text-zinc-500 mb-3" />
+            <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
+              ₹<AnimatedCounter from={0} to={30} />
+            </h4>
+            <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Reg Fee</p>
+          </div>
+          
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+            <Trophy className="h-4 w-4 text-zinc-500 mb-3" />
+            <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
+              <AnimatedCounter from={0} to={3} />
+            </h4>
+            <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Winning Positions</p>
+          </div>
+          
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+            <Award className="h-4 w-4 text-zinc-500 mb-3" />
+            <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
+              <AnimatedCounter from={0} to={100} />%
+            </h4>
+            <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Certificates</p>
+          </div>
+          
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center col-span-2 md:col-span-1">
+            <Users className="h-4 w-4 text-zinc-500 mb-3" />
+            <h4 className="text-3xl font-bold tracking-tight text-white mb-1">OGI</h4>
+            <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Eligible Students</p>
+          </div>
         </motion.section>
 
         {/* Visual Workflow Challenge */}
         <motion.section 
           id="workflow"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          {...animationProps()}
           className="text-center scroll-mt-24"
         >
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-12">The <span className="text-emerald-400">Vibe Coding</span> Workflow</h2>
-          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mb-16">
+          <div className="mb-12">
+            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mb-2">Challenge Pipeline</span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">The Vibe Coding Workflow</h2>
+          </div>
+          
+          {/* Workflow Pipeline */}
+          <div className="flex flex-col md:flex-row justify-center items-stretch gap-3 md:gap-2 mb-16 max-w-4xl mx-auto">
             {eventData.workflow.map((step, idx) => (
-              <div key={idx} className="flex items-center gap-4 md:gap-8">
-                <motion.div 
-                  whileHover={{ scale: 1.1 }}
-                  className="px-6 py-4 rounded-xl bg-slate-800 border border-slate-600 text-lg font-bold text-white shadow-xl glow-emerald"
+              <div key={idx} className="flex flex-col md:flex-row items-center w-full md:w-auto">
+                <div 
+                  className="w-full md:w-auto px-5 py-3.5 rounded-lg bg-zinc-950 border border-zinc-900 text-sm font-semibold text-zinc-300 flex items-center justify-center gap-3 hover:border-zinc-800 transition-colors"
                 >
-                  {step}
-                </motion.div>
+                  <span className="flex items-center justify-center w-5 h-5 rounded bg-zinc-900 text-zinc-400 text-[10px] font-bold border border-zinc-850">
+                    0{idx + 1}
+                  </span>
+                  <span className="tracking-wide text-zinc-200 font-mono">{step.toUpperCase()}</span>
+                </div>
                 {idx < eventData.workflow.length - 1 && (
-                  <div className="text-emerald-400 font-bold text-2xl animate-pulse">→</div>
+                  <div className="my-2.5 md:my-0 md:mx-3 text-zinc-650 font-bold text-lg animate-pulse" aria-hidden="true">
+                    <span className="block md:hidden">↓</span>
+                    <span className="hidden md:block">→</span>
+                  </div>
                 )}
               </div>
             ))}
           </div>
 
-          <h3 className="text-xl text-slate-300 font-bold mb-6">Supported Tools</h3>
-          <div className="flex flex-wrap justify-center gap-4">
+          <h3 className="text-xs text-zinc-500 font-bold tracking-wider uppercase mb-5">Supported AI Tools & Environments</h3>
+          <div className="flex flex-wrap justify-center gap-2.5 max-w-2xl mx-auto">
             {eventData.tools.map((tool, idx) => (
-              <motion.span 
+              <span 
                 key={idx}
-                whileHover={{ scale: 1.1, y: -5 }}
-                className="px-4 py-2 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 font-medium text-sm flex items-center gap-2"
+                className="px-3 py-1.5 rounded-md bg-zinc-950 border border-zinc-900 text-zinc-400 font-medium text-xs flex items-center gap-2 hover:border-zinc-800 transition-colors"
               >
-                <Code2 className="h-4 w-4 text-emerald-400" />
+                <Code2 className="h-3.5 w-3.5 text-zinc-500" />
                 {tool}
-              </motion.span>
+              </span>
             ))}
           </div>
         </motion.section>
@@ -210,146 +186,145 @@ export default function Home() {
         {/* Timeline */}
         <motion.section 
           id="timeline"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="scroll-mt-24"
+          {...animationProps()}
+          className="scroll-mt-24 max-w-3xl mx-auto w-full"
         >
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-12 text-center">Event <span className="text-violet-400">Timeline</span></h2>
-          <div className="relative max-w-2xl mx-auto">
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-400 via-violet-500 to-transparent hidden md:block"></div>
-            <div className="flex flex-col gap-8">
+          <div className="text-center mb-16">
+            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mb-2">Schedule</span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">Event Timeline</h2>
+          </div>
+          
+          <div className="relative pl-6 sm:pl-8 border-l border-zinc-900 ml-4">
+            <div className="flex flex-col gap-10">
               {eventData.timeline.map((item, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  className="flex flex-col md:flex-row gap-4 md:gap-8 items-start relative"
-                >
-                  <div className="md:w-32 pt-2 text-emerald-400 font-bold text-lg hidden md:block text-right">
-                    {item.time}
+                <div key={idx} className="relative">
+                  {/* Circle Indicator on the line */}
+                  <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3 h-3 rounded-full bg-black border border-zinc-750 flex items-center justify-center">
+                    <span className="w-1 h-1 rounded-full bg-emerald-500"></span>
                   </div>
-                  <div className="hidden md:flex absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-slate-900 border-2 border-emerald-400 mt-3 glow-emerald"></div>
-                  <div className="glass-panel p-6 rounded-2xl flex-1 border border-slate-700/50 hover:border-emerald-500/30 transition-colors">
-                    <div className="text-emerald-400 font-bold text-sm mb-2 md:hidden">{item.time}</div>
-                    <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                    <p className="text-slate-400">{item.description}</p>
+                  
+                  <div className="bg-zinc-950 border border-zinc-900 rounded-lg p-5 hover:border-zinc-850 transition-colors">
+                    <div className="text-xs font-semibold text-emerald-500 mb-2 flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 text-emerald-500" />
+                      {item.time}
+                    </div>
+                    <h3 className="text-lg font-bold text-zinc-100 mb-2">{item.title}</h3>
+                    <p className="text-sm text-zinc-400 leading-relaxed">{item.description}</p>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </motion.section>
 
-        {/* Prizes Section - Podium Layout */}
+        {/* Prizes Section - Clean SaaS Pricing-style Grid */}
         <motion.section 
           id="prizes"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="pt-12 scroll-mt-24"
+          {...animationProps()}
+          className="scroll-mt-24"
         >
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-16 text-center">The <span className="text-amber-400">Prizes</span></h2>
+          <div className="text-center mb-16">
+            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mb-2">Recognition</span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">Prizes & Rewards</h2>
+          </div>
           
-          <div className="flex flex-col md:flex-row items-end justify-center gap-6 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 items-stretch">
             {/* 2nd Place */}
-            <TiltCard className="w-full md:w-1/3 order-2 md:order-1">
-              <motion.div 
-                className="h-[280px] glass-card rounded-2xl p-6 flex flex-col items-center justify-center text-center border border-slate-300/30 shadow-[0_0_30px_rgba(203,213,225,0.1)] relative overflow-hidden"
-              >
-                <div className="absolute top-0 w-full h-1 bg-slate-300"></div>
-                <span className="text-5xl mb-4">🥈</span>
-                <h3 className="text-2xl font-bold mb-2 text-slate-300">2nd Place</h3>
-                <div className="text-slate-400 font-medium">Trophy + Certificate</div>
-              </motion.div>
-            </TiltCard>
+            <div className="premium-card p-6 flex flex-col justify-between min-h-[200px]">
+              <div>
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-1">Runner Up</span>
+                <h3 className="text-2xl font-bold text-zinc-200 mb-4">Second Place</h3>
+              </div>
+              <div>
+                <span className="text-3xl mb-4 block">🥈</span>
+                <p className="text-sm text-zinc-400 font-medium">{eventData.prizes[1].reward}</p>
+              </div>
+            </div>
 
             {/* 1st Place */}
-            <TiltCard className="w-full md:w-1/3 order-1 md:order-2 z-10">
-              <motion.div 
-                className="h-[340px] glass-card rounded-2xl p-6 flex flex-col items-center justify-center text-center animated-border border-transparent relative"
-              >
-                <div className="absolute top-0 w-full h-2 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)]"></div>
-                <span className="text-7xl mb-4">🥇</span>
-                <h3 className="text-3xl font-black mb-2 text-amber-400 glow-text-amber">1st Place</h3>
-                <div className="text-slate-300 font-medium text-lg">Trophy + Certificate</div>
-              </motion.div>
-            </TiltCard>
+            <div className="premium-card-primary p-6 flex flex-col justify-between min-h-[220px] relative border-emerald-500/20 shadow-lg shadow-emerald-950/10">
+              <div className="absolute top-3 right-3 px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] font-bold uppercase tracking-wider border border-emerald-500/20">
+                Champion
+              </div>
+              <div>
+                <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider block mb-1">Grand Winner</span>
+                <h3 className="text-2xl font-bold text-white mb-4">First Place</h3>
+              </div>
+              <div>
+                <span className="text-4xl mb-4 block">🥇</span>
+                <p className="text-sm text-zinc-300 font-medium">{eventData.prizes[0].reward}</p>
+              </div>
+            </div>
 
             {/* 3rd Place */}
-            <TiltCard className="w-full md:w-1/3 order-3 md:order-3">
-              <motion.div 
-                className="h-[260px] glass-card rounded-2xl p-6 flex flex-col items-center justify-center text-center border border-amber-700/30 shadow-[0_0_30px_rgba(180,83,9,0.1)] relative overflow-hidden"
-              >
-                <div className="absolute top-0 w-full h-1 bg-amber-700"></div>
-                <span className="text-5xl mb-4">🥉</span>
-                <h3 className="text-2xl font-bold mb-2 text-amber-600">3rd Place</h3>
-                <div className="text-slate-400 font-medium">Trophy + Certificate</div>
-              </motion.div>
-            </TiltCard>
+            <div className="premium-card p-6 flex flex-col justify-between min-h-[200px]">
+              <div>
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-1">Second Runner Up</span>
+                <h3 className="text-2xl font-bold text-zinc-200 mb-4">Third Place</h3>
+              </div>
+              <div>
+                <span className="text-3xl mb-4 block">🥉</span>
+                <p className="text-sm text-zinc-400 font-medium">{eventData.prizes[2].reward}</p>
+              </div>
+            </div>
           </div>
 
-          <TiltCard>
-            <div className="glass-panel rounded-2xl p-8 text-center border border-emerald-500/30 glow-emerald max-w-2xl mx-auto">
-              <h3 className="text-2xl font-bold text-emerald-400 mb-3 flex items-center justify-center gap-2">
-                <Award className="h-6 w-6" /> {eventData.participationCertificate}
-              </h3>
-              <p className="text-slate-300 font-medium">Showcase your participation in a flagship AI tech event on your LinkedIn & resume.</p>
-            </div>
-          </TiltCard>
+          <div className="border border-zinc-900 bg-zinc-950/40 rounded-xl p-6 text-center max-w-2xl mx-auto">
+            <h3 className="text-sm font-bold text-zinc-200 mb-2 flex items-center justify-center gap-2">
+              <Award className="h-4 w-4 text-emerald-500" /> {eventData.participationCertificate}
+            </h3>
+            <p className="text-xs text-zinc-550 leading-relaxed">All participants will receive a verified e-certificate issued by the AIML Club to add to their portfolios.</p>
+          </div>
         </motion.section>
 
         {/* Why Participate Features */}
         <motion.section 
           id="why-join"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          {...animationProps()}
           className="scroll-mt-24"
         >
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-12 text-center">Why <span className="text-cyan-400">Participate?</span></h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="text-center mb-16">
+            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mb-2">Benefits</span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">Why Participate?</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {eventData.benefits.map((benefit: { title: string, icon: string }, idx: number) => {
               const IconComp = IconMap[benefit.icon] || Sparkles;
               return (
-                <TiltCard key={idx} className="h-full">
-                  <motion.div 
-                    variants={prefersReducedMotion ? {} : hoverScale}
-                    whileHover="hover"
-                    className="h-full glass-card p-6 rounded-2xl border border-white/5 flex flex-col items-start gap-4"
-                  >
-                    <div className="p-3 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
-                      <IconComp className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-slate-200 font-bold leading-snug text-lg">{benefit.title}</h3>
-                  </motion.div>
-                </TiltCard>
+                <div key={idx} className="premium-card p-5 flex flex-col justify-between min-h-[140px]">
+                  <div className="p-2 w-fit rounded bg-zinc-900 text-zinc-400 border border-zinc-850">
+                    <IconComp className="h-4 w-4 text-emerald-500" />
+                  </div>
+                  <h3 className="text-zinc-250 font-bold leading-snug text-sm tracking-wide mt-4">{benefit.title}</h3>
+                </div>
               );
             })}
           </div>
         </motion.section>
 
-        {/* Social Proof Placeholder */}
+        {/* Testimonials */}
         <motion.section 
           id="community"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          {...animationProps()}
           className="text-center scroll-mt-24"
         >
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-12">The <span className="text-emerald-400">Community</span></h2>
+          <div className="mb-16">
+            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mb-2">Feedback</span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">Student Testimonials</h2>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {eventData.testimonials.map((t, idx) => (
-              <div key={idx} className="glass-panel p-8 rounded-3xl text-left border border-slate-700/50">
-                <p className="text-xl text-slate-300 italic mb-6">&quot;{t.quote}&quot;</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-emerald-400 font-bold">
+              <div key={idx} className="premium-card p-6 text-left flex flex-col justify-between">
+                <p className="text-sm text-zinc-400 italic leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 text-xs font-bold">
                     {t.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="text-white font-bold">{t.name}</h4>
-                    <p className="text-sm text-slate-400">{t.role}</p>
+                    <h4 className="text-zinc-200 text-xs font-bold">{t.name}</h4>
+                    <p className="text-[10px] text-zinc-550 mt-0.5">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -359,39 +334,63 @@ export default function Home() {
 
       </main>
 
-      {/* Professional Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 pt-16 pb-8 relative z-10 px-4 md:px-8">
+      {/* Minimal Product Footer */}
+      <footer className="border-t border-zinc-900 bg-[#030303] pt-16 pb-8 relative z-10 px-6 md:px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
-            <h2 className="text-2xl font-black text-white mb-4">SNAPCODE <span className="text-emerald-400">2026</span></h2>
-            <p className="text-slate-400 mb-6 max-w-md">The ultimate frontend design challenge utilizing AI Vibe Coding to build and deploy applications in 100 minutes.</p>
-            <div className="flex gap-4">
-              <a href={eventData.contact.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-pink-400 hover:bg-slate-800 transition-colors"><Instagram className="h-5 w-5" /></a>
-              <a href={eventData.contact.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-colors"><Github className="h-5 w-5" /></a>
-              <a href={`mailto:${eventData.contact.email}`} className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors"><Mail className="h-5 w-5" /></a>
+            <h2 className="text-lg font-bold text-white mb-4">SNAPCODE <span className="text-emerald-500">2026</span></h2>
+            <p className="text-xs text-zinc-500 mb-6 max-w-md leading-relaxed">
+              Organized by the AI & Machine Learning Club of Oriental College of Technology, Bhopal. A 100-minute challenge testing rapid product design & vibe coding abilities.
+            </p>
+            <div className="flex gap-3">
+              <a 
+                href={eventData.contact.instagram} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-8 h-8 rounded bg-zinc-950 border border-zinc-900 flex items-center justify-center text-zinc-500 hover:text-zinc-200 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500"
+                aria-label="AIML Club Instagram"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a 
+                href={eventData.contact.github} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-8 h-8 rounded bg-zinc-950 border border-zinc-900 flex items-center justify-center text-zinc-500 hover:text-zinc-200 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500"
+                aria-label="Organizer GitHub"
+              >
+                <Github className="h-4 w-4" />
+              </a>
+              <a 
+                href={`mailto:${eventData.contact.email}`} 
+                className="w-8 h-8 rounded bg-zinc-950 border border-zinc-900 flex items-center justify-center text-zinc-500 hover:text-zinc-200 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500"
+                aria-label="Organizer Email"
+              >
+                <Mail className="h-4 w-4" />
+              </a>
             </div>
           </div>
           
           <div>
-            <h3 className="text-lg font-bold text-white mb-4">Event Details</h3>
-            <ul className="flex flex-col gap-3 text-slate-400">
-              <li className="flex items-center gap-2"><Calendar className="h-4 w-4" /> {eventData.date}</li>
-              <li className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {eventData.venue}</li>
-              <li className="flex items-center gap-2"><Ticket className="h-4 w-4" /> {eventData.fee}</li>
+            <h3 className="text-xs font-bold text-zinc-200 mb-4 uppercase tracking-wider">Event Details</h3>
+            <ul className="flex flex-col gap-2.5 text-xs text-zinc-500">
+              <li className="flex items-center gap-2"><Calendar className="h-3.5 w-3.5 text-zinc-600" /> {eventData.date}</li>
+              <li className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 text-zinc-600" /> {eventData.venue}</li>
+              <li className="flex items-center gap-2"><Ticket className="h-3.5 w-3.5 text-zinc-600" /> {eventData.fee}</li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold text-white mb-4">Organized By</h3>
-            <p className="text-slate-400 font-bold mb-1">{eventData.contact.club}</p>
-            <p className="text-slate-500 text-sm mb-4">{eventData.contact.college}</p>
-            <ul className="flex flex-col gap-2 text-slate-400">
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> {eventData.contact.email}</li>
+            <h3 className="text-xs font-bold text-zinc-200 mb-4 uppercase tracking-wider">Organized By</h3>
+            <p className="text-xs font-semibold text-zinc-400 mb-1">{eventData.contact.club}</p>
+            <p className="text-[10px] text-zinc-550 mb-3">{eventData.contact.college}</p>
+            <ul className="flex flex-col gap-2 text-xs text-zinc-500">
+              <li className="flex items-center gap-2"><Mail className="h-3.5 w-3.5 text-zinc-650" /> {eventData.contact.email}</li>
             </ul>
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto pt-8 border-t border-slate-800/60 text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="max-w-6xl mx-auto pt-8 border-t border-zinc-900/60 text-[10px] text-zinc-600 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p>© 2026 AI &amp; Machine Learning Club, OCT Bhopal. All rights reserved.</p>
           <p className="flex items-center gap-1">
             Designed &amp; Built by{" "}
@@ -399,7 +398,7 @@ export default function Home() {
               href="https://www.linkedin.com/in/umesh-patel-5647b42a4/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors hover:underline ml-1"
+              className="text-emerald-500 hover:text-emerald-450 font-semibold transition-colors hover:underline ml-0.5 focus-visible:ring-1 focus-visible:ring-emerald-500 rounded px-0.5"
             >
               Umesh Patel
             </a>
