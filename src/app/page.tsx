@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { eventData } from "@/data/event";
 import {
   Calendar,
   MapPin,
   Ticket,
-  ExternalLink,
   Pause,
   Play,
   Instagram,
@@ -19,10 +18,8 @@ import {
   Check,
   Sparkles,
   ArrowRight,
-  Info,
   RefreshCw,
   Trophy,
-  Zap,
   Code2,
   BrainCircuit,
   Rocket
@@ -63,6 +60,7 @@ export default function Home() {
 
   // Set mounted flag to avoid hydration differences
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -86,6 +84,7 @@ export default function Home() {
     if (!mounted) return;
     if (timeLeft <= 0) {
       if (isActive && !isRedirecting) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsRedirecting(true);
         window.location.href = eventData.registrationUrl;
       }
