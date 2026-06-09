@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { motion, useReducedMotion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { eventData } from "@/data/event";
 import {
@@ -11,8 +10,6 @@ import {
   Instagram,
   Github,
   Mail,
-  Phone,
-  Check,
   Sparkles,
   Trophy,
   Code2,
