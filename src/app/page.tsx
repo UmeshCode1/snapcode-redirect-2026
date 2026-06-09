@@ -140,16 +140,6 @@ export default function Home() {
     }
   };
 
-  if (!mounted) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  const animProps = prefersReducedMotion ? {} : { variants: fadeInUp };
-
   const [particles] = useState(() => 
     [...Array(6)].map(() => ({
       width: Math.random() * 100 + 50 + 'px',
@@ -160,6 +150,16 @@ export default function Home() {
       animationDuration: `${Math.random() * 5 + 5}s`
     }))
   );
+
+  if (!mounted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  const animProps = prefersReducedMotion ? {} : { variants: fadeInUp };
 
   return (
     <div className="relative min-h-screen w-full bg-grid-pattern pb-16 pt-6 px-4 md:px-8 flex flex-col font-sans overflow-x-hidden">
