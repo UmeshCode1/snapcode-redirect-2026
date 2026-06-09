@@ -357,8 +357,9 @@ export default function Home() {
             <h2 className="text-2xl font-black text-white mb-4">SNAPCODE <span className="text-emerald-400">2026</span></h2>
             <p className="text-slate-400 mb-6 max-w-md">The ultimate frontend design challenge utilizing AI Vibe Coding to build and deploy applications in 100 minutes.</p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-colors"><Instagram className="h-5 w-5" /></a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-colors"><Github className="h-5 w-5" /></a>
+              <a href={eventData.contact.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-pink-400 hover:bg-slate-800 transition-colors"><Instagram className="h-5 w-5" /></a>
+              <a href={eventData.contact.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-colors"><Github className="h-5 w-5" /></a>
+              <a href={`mailto:${eventData.contact.email}`} className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors"><Mail className="h-5 w-5" /></a>
             </div>
           </div>
           
@@ -376,14 +377,24 @@ export default function Home() {
             <p className="text-slate-400 font-bold mb-1">{eventData.contact.club}</p>
             <p className="text-slate-500 text-sm mb-4">{eventData.contact.college}</p>
             <ul className="flex flex-col gap-2 text-slate-400">
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> aimlcluboct@gmail.com</li>
+              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> {eventData.contact.email}</li>
             </ul>
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto pt-8 border-t border-slate-900 text-center text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
-          <p>© 2026 AI & Machine Learning Club, OCT Bhopal. All rights reserved.</p>
-          <p>Built with Next.js & Framer Motion</p>
+        <div className="max-w-6xl mx-auto pt-8 border-t border-slate-800/60 text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
+          <p>© 2026 AI &amp; Machine Learning Club, OCT Bhopal. All rights reserved.</p>
+          <p className="flex items-center gap-1">
+            Designed &amp; Built by{" "}
+            <a
+              href="https://www.linkedin.com/in/umesh-patel-5647b42a4/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors hover:underline ml-1"
+            >
+              Umesh Patel
+            </a>
+          </p>
         </div>
       </footer>
     </div>

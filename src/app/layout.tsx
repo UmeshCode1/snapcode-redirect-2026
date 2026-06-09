@@ -20,11 +20,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SNAPCODE 2026 | Frontend Design Challenge Using Vibe Coding",
     description: "Join SNAPCODE 2026, an AI-powered frontend design challenge organized by the AI & Machine Learning Club. Build, design, and deploy a website in 100 minutes using modern AI development tools.",
-    url: "https://snapcode.aimlcluboct.in",
+    url: "https://info.aimlcluboct.in",
     siteName: "SNAPCODE 2026",
     images: [
       {
-        url: "/assets/og-image.png",
+        url: "https://info.aimlcluboct.in/assets/og-image.png",
         width: 1200,
         height: 630,
         alt: "SNAPCODE 2026 Banner",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SNAPCODE 2026 | Frontend Design Challenge Using Vibe Coding",
     description: "Join SNAPCODE 2026, an AI-powered frontend design challenge organized by the AI & Machine Learning Club. Build, design, and deploy a website in 100 minutes using modern AI development tools.",
-    images: ["/assets/og-image.png"],
+    images: ["https://info.aimlcluboct.in/assets/og-image.png"],
   },
 };
 
