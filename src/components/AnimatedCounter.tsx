@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useInView, useMotionValue, useSpring } from "framer-motion";
+import { useInView } from "framer-motion";
 
 interface AnimatedCounterProps {
   from: number;
@@ -9,29 +9,22 @@ interface AnimatedCounterProps {
   duration?: number;
 }
 
-export default function AnimatedCounter({ from, to, duration = 2 }: AnimatedCounterProps) {
+export default function AnimatedCounter({ from, to, duration = 1500 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const [value, setValue] = useState(from);
-  
-  const motionValue = useMotionValue(from);
-  const springValue = useSpring(motionValue, {
-    damping: 50,
-    stiffness: 100,
-    duration: duration * 1000,
-  });
 
   useEffect(() => {
-    if (inView) {
-      motionValue.set(to);
-    }
-  }, [inView, motionValue, to]);
-
-  useEffect(() => {
-    springValue.on("change", (latest) => {
-      setValue(Math.floor(latest));
-    });
-  }, [springValue]);
+    if (!inView) return;
+    let start: number | null = null;
+    const step = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      setValue(Math.floor(progress * (to - from) + from));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [inView, from, to, duration]);
 
   return <span ref={ref}>{value}</span>;
 }

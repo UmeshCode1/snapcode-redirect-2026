@@ -53,11 +53,6 @@ export const eventData = {
     { name: "Placeholder Student", role: "Frontend Dev", quote: "I've never built a website this fast. AI tools changed everything!" },
     { name: "Placeholder Dev", role: "UI Designer", quote: "The energy was insane. Vibe coding is the future of hackathons." }
   ],
-  gallery: [
-    { src: "/assets/placeholder-1.jpg", alt: "Event Image 1" },
-    { src: "/assets/placeholder-2.jpg", alt: "Event Image 2" },
-    { src: "/assets/placeholder-3.jpg", alt: "Event Image 3" }
-  ],
   contact: {
     club: "AI & Machine Learning Club",
     college: "Oriental College of Technology, Bhopal",
