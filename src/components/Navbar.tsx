@@ -32,8 +32,8 @@ export default function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-black/80 backdrop-blur-md border-b border-zinc-900 py-3 shadow-md"
+        scrolled || isOpen
+          ? "bg-black/95 backdrop-blur-md border-b border-zinc-900 py-3 shadow-md"
           : "bg-transparent py-5"
       }`}
     >
@@ -88,7 +88,7 @@ export default function Navbar() {
             />
             <div className="hidden lg:flex flex-col text-left">
               <span className="text-[10px] font-bold text-zinc-300 leading-none tracking-wide">AIML CLUB</span>
-              <span className="text-[8px] text-zinc-500 font-medium leading-none mt-0.5">OCT</span>
+              <span className="text-[8px] text-zinc-550 font-medium leading-none mt-0.5">OCT</span>
             </div>
           </a>
 
@@ -103,7 +103,7 @@ export default function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-1.5 text-zinc-450 hover:text-zinc-100 md:hidden hover:bg-zinc-900 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500"
+            className="p-1.5 text-zinc-400 hover:text-zinc-100 md:hidden hover:bg-zinc-900 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 cursor-pointer"
             aria-label="Toggle Navigation Menu"
             aria-expanded={isOpen}
           >
