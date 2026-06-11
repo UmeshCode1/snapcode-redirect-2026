@@ -172,6 +172,12 @@ export default function Home() {
       {/* Handcrafted Subtle Dot Grid */}
       <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none z-0"></div>
 
+      {/* Ambient Moving Spotlight Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="ambient-orb-1"></div>
+        <div className="ambient-orb-2"></div>
+      </div>
+
       <Modals />
       <Navbar />
       <SpotlightHero />
@@ -200,7 +206,7 @@ export default function Home() {
           className="grid grid-cols-2 md:grid-cols-5 gap-px bg-zinc-900 border border-zinc-900 rounded-xl overflow-hidden"
           aria-label="Event Key Stats"
         >
-          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 hover:-translate-y-[2px] transition-all duration-300 text-center">
             <Clock className="h-4 w-4 text-zinc-500 mb-3" />
             <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
               <AnimatedCounter from={0} to={100} />
@@ -208,7 +214,7 @@ export default function Home() {
             <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Minutes Challenge</p>
           </div>
           
-          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 hover:-translate-y-[2px] transition-all duration-300 text-center">
             <Ticket className="h-4 w-4 text-zinc-500 mb-3" />
             <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
               ₹<AnimatedCounter from={0} to={30} />
@@ -216,7 +222,7 @@ export default function Home() {
             <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Reg Fee</p>
           </div>
           
-          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 hover:-translate-y-[2px] transition-all duration-300 text-center">
             <Trophy className="h-4 w-4 text-zinc-500 mb-3" />
             <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
               <AnimatedCounter from={0} to={3} />
@@ -224,7 +230,7 @@ export default function Home() {
             <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Winning Positions</p>
           </div>
           
-          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center">
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 hover:-translate-y-[2px] transition-all duration-300 text-center">
             <Award className="h-4 w-4 text-zinc-500 mb-3" />
             <h4 className="text-3xl font-bold tracking-tight text-white mb-1">
               <AnimatedCounter from={0} to={100} />%
@@ -232,7 +238,7 @@ export default function Home() {
             <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Certificates</p>
           </div>
           
-          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 transition-colors text-center col-span-2 md:col-span-1">
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-black hover:bg-zinc-950/40 hover:-translate-y-[2px] transition-all duration-300 text-center col-span-2 md:col-span-1">
             <Users className="h-4 w-4 text-zinc-500 mb-3" />
             <h4 className="text-3xl font-bold tracking-tight text-white mb-1">OGI</h4>
             <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">Eligible Students</p>

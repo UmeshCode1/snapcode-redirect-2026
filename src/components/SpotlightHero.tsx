@@ -119,6 +119,29 @@ export default function SpotlightHero() {
             Explore Challenge
           </a>
         </motion.div>
+
+        {/* Animated Scroll Down Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-zinc-550 pointer-events-none"
+        >
+          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-650">Scroll to explore</span>
+          <div className="w-5 h-8 rounded-full border border-zinc-850 flex justify-center p-1.5">
+            <motion.div
+              animate={{
+                y: [0, 10, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="w-1 h-1 rounded-full bg-emerald-500"
+            />
+          </div>
+        </motion.div>
       </div>
     </section>
   );

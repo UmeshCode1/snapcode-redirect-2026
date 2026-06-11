@@ -39,13 +39,14 @@ body {
   background-color: rgba(9, 9, 11, 0.5);
   border: 1px solid rgba(39, 39, 42, 0.5);
   border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .premium-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
   background-color: rgba(9, 9, 11, 0.7);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -15px rgba(16, 185, 129, 0.15);
 }
 
 /* 1st Place Highlight Card */
@@ -53,13 +54,14 @@ body {
   background-color: rgba(9, 9, 11, 0.6);
   border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .premium-card-primary:hover {
-  border-color: rgba(16, 185, 129, 0.6);
+  border-color: rgba(16, 185, 129, 0.7);
   background-color: rgba(9, 9, 11, 0.8);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -15px rgba(16, 185, 129, 0.25);
 }
 
 /* Accessibility Focus States */
@@ -90,4 +92,56 @@ body {
 /* Smooth Scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Ambient Moving Spotlight Orbs */
+@keyframes float-glow-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(10%, -10%) scale(1.1);
+  }
+  66% {
+    transform: translate(-10%, 15%) scale(0.9);
+  }
+}
+
+@keyframes float-glow-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(0.9);
+  }
+  50% {
+    transform: translate(-15%, -5%) scale(1.15);
+  }
+}
+
+.ambient-orb-1 {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  width: 45vw;
+  height: 45vw;
+  max-width: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  animation: float-glow-1 25s infinite ease-in-out;
+  z-index: 0;
+}
+
+.ambient-orb-2 {
+  position: absolute;
+  top: 55%;
+  left: 5%;
+  width: 50vw;
+  height: 50vw;
+  max-width: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.04) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  animation: float-glow-2 30s infinite ease-in-out;
+  z-index: 0;
 }
