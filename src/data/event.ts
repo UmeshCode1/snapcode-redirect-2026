@@ -66,7 +66,11 @@ export const eventData = {
     college: "Oriental College of Technology, Bhopal",
     email: "aimlcluboct@gmail.com",
     phone: "+91 91795 87402",
-    instagram: "https://instagram.com/aiml_club_oct",
+    instagram: "https://instagram.com/aimlcluboct",
+    linkedin: "https://linkedin.com/company/aimlcluboct",
+    website: "https://aimlcluboct.in",
+    whatsappChannel: "https://whatsapp.com/channel/0029VbAthv38V0tfulumuV1D",
+    whatsappGroup: "https://chat.whatsapp.com/ITBTDOgerQVLnw9dq7jxN6",
     github: "https://github.com/UmeshCode1",
   }
 };

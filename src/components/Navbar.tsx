@@ -73,7 +73,7 @@ export default function Navbar() {
         {/* Right Side: Club Logo & CTA */}
         <div className="flex items-center gap-4">
           <a
-            href="https://instagram.com/aiml_club_oct"
+            href={eventData.contact.instagram}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 group focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
