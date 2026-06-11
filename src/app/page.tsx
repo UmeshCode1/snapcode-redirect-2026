@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { eventData } from "@/data/event";
 import {
   Calendar,
@@ -20,7 +20,8 @@ import {
   Target,
   Award,
   Clock,
-  ArrowRight
+  ArrowRight,
+  X
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import SpotlightHero from "@/components/SpotlightHero";
@@ -41,11 +42,23 @@ const IconMap: Record<string, React.ElementType> = {
 export default function Home() {
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
+  const [showRedirectModal, setShowRedirectModal] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Show registration redirect modal after 1 minute (60 seconds)
+    const timer = setTimeout(() => {
+      setShowRedirectModal(true);
+    }, 60000);
+
+    return () => clearTimeout(timer);
+  }, [mounted]);
 
   if (!mounted) return null;
 
@@ -66,6 +79,62 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen w-full font-sans overflow-x-hidden text-zinc-200 bg-black selection:bg-zinc-800 selection:text-zinc-100">
+      {/* 1-Minute Redirect Modal Pop-up */}
+      <AnimatePresence>
+        {showRedirectModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 15, opacity: 0 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="relative max-w-md w-full bg-zinc-950/90 border border-zinc-900 rounded-2xl p-8 shadow-2xl backdrop-blur-xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="redirect-modal-title"
+            >
+              <button
+                onClick={() => setShowRedirectModal(false)}
+                className="absolute top-5 right-5 text-zinc-550 hover:text-zinc-300 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded p-1 transition-colors cursor-pointer"
+                aria-label="Close dialog"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              
+              <div className="flex flex-col items-center text-center mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-950/30 border border-emerald-800/20 text-emerald-400 mb-4 animate-pulse">
+                  <Ticket className="h-6 w-6 text-emerald-500" />
+                </div>
+                <h2 id="redirect-modal-title" className="text-2xl font-bold text-white mb-2">Ready to Register?</h2>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  You&apos;ve been exploring SNAPCODE 2026 for a minute! Secure your spot now for the frontend challenge using Vibe Coding.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => setShowRedirectModal(false)}
+                  className="w-full py-2.5 rounded-lg border border-zinc-850 hover:border-zinc-700 bg-zinc-950 text-zinc-400 hover:text-zinc-200 font-semibold text-xs transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  Keep Browsing
+                </button>
+                <a
+                  href={eventData.registrationUrl}
+                  className="w-full py-2.5 bg-zinc-100 hover:bg-white text-black rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                >
+                  Register Now <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Handcrafted Subtle Dot Grid */}
       <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none z-0"></div>
 
@@ -332,12 +401,42 @@ export default function Home() {
           </div>
         </motion.section>
 
+        {/* Contact/Coordinators CTA Card */}
+        <motion.section
+          {...animationProps(0.1)}
+          className="max-w-3xl mx-auto w-full border border-zinc-900 bg-zinc-950/20 rounded-2xl p-8 backdrop-blur-sm relative overflow-hidden text-center md:text-left"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+            <div>
+              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mb-2">Support</span>
+              <h3 className="text-2xl font-bold text-white mb-2">Have Questions?</h3>
+              <p className="text-sm text-zinc-400 max-w-md">
+                Get in touch with our event coordinators if you have any questions regarding SNAPCODE 2026.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto justify-center">
+              {eventData.coordinators.map((coordinator, idx) => (
+                <a
+                  key={idx}
+                  href={`tel:${coordinator.phone.replace(/\s+/g, '')}`}
+                  className="flex flex-col items-center md:items-start gap-1 p-4 rounded-xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 hover:bg-zinc-950/80 transition-all group w-full sm:w-44"
+                >
+                  <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Coordinator</span>
+                  <span className="text-sm font-bold text-zinc-200 group-hover:text-emerald-400 transition-colors">{coordinator.name}</span>
+                  <span className="text-xs text-zinc-400 font-mono mt-1">{coordinator.phone}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
       </main>
 
       {/* Minimal Product Footer */}
       <footer className="border-t border-zinc-900 bg-[#030303] pt-16 pb-8 relative z-10 px-6 md:px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div className="md:col-span-2">
+          <div>
             <h2 className="text-lg font-bold text-white mb-4">SNAPCODE <span className="text-emerald-500">2026</span></h2>
             <p className="text-xs text-zinc-500 mb-6 max-w-md leading-relaxed">
               Organized by the AI & Machine Learning Club of Oriental College of Technology, Bhopal. A 100-minute challenge testing rapid product design & vibe coding abilities.
@@ -381,6 +480,23 @@ export default function Home() {
           </div>
 
           <div>
+            <h3 className="text-xs font-bold text-zinc-200 mb-4 uppercase tracking-wider">Coordinators</h3>
+            <ul className="flex flex-col gap-3 text-xs text-zinc-500">
+              {eventData.coordinators.map((coordinator, idx) => (
+                <li key={idx} className="flex flex-col">
+                  <span className="font-semibold text-zinc-400">{coordinator.name}</span>
+                  <a 
+                    href={`tel:${coordinator.phone.replace(/\s+/g, '')}`} 
+                    className="hover:text-emerald-450 transition-colors text-[11px] font-mono mt-1"
+                  >
+                    {coordinator.phone}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
             <h3 className="text-xs font-bold text-zinc-200 mb-4 uppercase tracking-wider">Organized By</h3>
             <p className="text-xs font-semibold text-zinc-400 mb-1">{eventData.contact.club}</p>
             <p className="text-[10px] text-zinc-550 mb-3">{eventData.contact.college}</p>
@@ -390,19 +506,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto pt-8 border-t border-zinc-900/60 text-[10px] text-zinc-600 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="max-w-6xl mx-auto pt-8 border-t border-zinc-900/60 text-[10px] text-zinc-600 flex justify-center items-center">
           <p>© 2026 AI &amp; Machine Learning Club, OCT Bhopal. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-            Designed &amp; Built by{" "}
-            <a
-              href="https://www.linkedin.com/in/umesh-patel-5647b42a4/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-emerald-500 hover:text-emerald-450 font-semibold transition-colors hover:underline ml-0.5 focus-visible:ring-1 focus-visible:ring-emerald-500 rounded px-0.5"
-            >
-              Umesh Patel
-            </a>
-          </p>
         </div>
       </footer>
     </div>
