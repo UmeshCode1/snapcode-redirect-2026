@@ -50,8 +50,16 @@ export const eventData = {
     { time: "02:00 PM", title: "Winner Announcement", description: "Prize distribution and closing ceremony." }
   ],
   testimonials: [
-    { name: "Aditya Sharma", role: "CSE 3rd Year Student", quote: "SNAPCODE was a game-changer. Building a fully functional web app in 100 minutes using Cursor and Claude felt like having a superpower!" },
-    { name: "Neha Patel", role: "Information Technology Student", quote: "The focus on Vibe Coding let me concentrate purely on design and user experience. It's the most exciting and fast-paced hackathon format!" }
+    {
+      name: "Rishi",
+      role: "1st Year AIML Student, OCT",
+      quote: "Heartfelt thanks to the AIML Club, respected seniors, organizers, and everyone involved in organizing this amazing event. It was a great learning experience, and I truly enjoyed interacting with such talented participants. Everyone performed really well, and the energy, confidence, and ideas shared by all participants made the event even more special. Looking forward to participating in more such activities in the future. 🚀"
+    },
+    {
+      name: "Harshit Purviya",
+      role: "1st Year Computer Science Student, OCT",
+      quote: "The competition was overall amazing. I was in round 1 and round 2 and enjoyed both. Everything was organized very well. I appreciate the effort of everyone and hope more competitions like this."
+    }
   ],
   contact: {
     club: "AI & Machine Learning Club",

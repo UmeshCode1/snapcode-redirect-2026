@@ -62,9 +62,10 @@ export default function Navbar() {
             <a
               key={link.name}
               href={link.href}
-              className="text-xs font-semibold text-zinc-400 hover:text-zinc-100 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1.5 py-0.5"
+              className="relative text-xs font-semibold text-zinc-400 hover:text-zinc-100 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1.5 py-1.5 group"
             >
               {link.name}
+              <span className="absolute bottom-0 left-1.5 right-1.5 h-[1.5px] bg-emerald-500 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
             </a>
           ))}
         </nav>
@@ -122,15 +123,18 @@ export default function Navbar() {
             className="md:hidden border-t border-zinc-900 bg-black/95 backdrop-blur-xl overflow-hidden"
           >
             <div className="px-6 py-6 flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <a
+              {navLinks.map((link, idx) => (
+                <motion.a
                   key={link.name}
                   href={link.href}
+                  initial={{ x: -15, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 24 }}
                   onClick={() => setIsOpen(false)}
-                  className="text-sm font-semibold text-zinc-300 hover:text-white transition-colors py-1 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="text-sm font-semibold text-zinc-300 hover:text-white transition-colors py-1 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1"
                 >
                   {link.name}
-                </a>
+                </motion.a>
               ))}
               <div className="w-full h-px bg-zinc-900 my-2"></div>
               <a

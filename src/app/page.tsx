@@ -43,6 +43,7 @@ export default function Home() {
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [showRedirectModal, setShowRedirectModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -52,12 +53,20 @@ export default function Home() {
   useEffect(() => {
     if (!mounted) return;
 
+    // Detect screen width to render mobile bottom-sheet vs desktop dialog
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     // Show registration redirect modal after 1 minute (60 seconds)
     const timer = setTimeout(() => {
       setShowRedirectModal(true);
     }, 60000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+      clearTimeout(timer);
+    };
   }, [mounted]);
 
   if (!mounted) return null;
@@ -79,21 +88,43 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen w-full font-sans overflow-x-hidden text-zinc-200 bg-black selection:bg-zinc-800 selection:text-zinc-100">
-      {/* 1-Minute Redirect Modal Pop-up */}
+      {/* 1-Minute Redirect Modal Pop-up (Responsive Bottom Sheet on Mobile, Centered Dialog on Desktop) */}
       <AnimatePresence>
         {showRedirectModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+            className={`fixed inset-0 z-[110] flex bg-black/80 backdrop-blur-md ${
+              isMobile ? "items-end p-0" : "items-center justify-center p-6"
+            }`}
           >
             <motion.div
-              initial={{ scale: 0.95, y: 15, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 15, opacity: 0 }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className="relative max-w-md w-full bg-zinc-950/90 border border-zinc-900 rounded-2xl p-8 shadow-2xl backdrop-blur-xl"
+              initial={
+                isMobile 
+                  ? { y: "100%", opacity: 1 } 
+                  : { scale: 0.95, y: 15, opacity: 0 }
+              }
+              animate={
+                isMobile 
+                  ? { y: 0, opacity: 1 } 
+                  : { scale: 1, y: 0, opacity: 1 }
+              }
+              exit={
+                isMobile 
+                  ? { y: "100%", opacity: 1 } 
+                  : { scale: 0.95, y: 15, opacity: 0 }
+              }
+              transition={
+                isMobile
+                  ? { type: "spring", damping: 30, stiffness: 300 }
+                  : { type: "spring", duration: 0.5 }
+              }
+              className={`relative bg-zinc-950/90 border border-zinc-900 shadow-2xl backdrop-blur-xl transition-all duration-150 ${
+                isMobile 
+                  ? "w-full rounded-t-2xl rounded-b-none p-6 pb-10 max-w-none border-b-0" 
+                  : "max-w-md w-full rounded-2xl p-8"
+              }`}
               role="dialog"
               aria-modal="true"
               aria-labelledby="redirect-modal-title"
@@ -299,7 +330,13 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 items-stretch">
             {/* 2nd Place */}
-            <div className="premium-card p-6 flex flex-col justify-between min-h-[200px]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="premium-card p-6 flex flex-col justify-between min-h-[200px] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+            >
               <div>
                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-1">Runner Up</span>
                 <h3 className="text-2xl font-bold text-zinc-200 mb-4">Second Place</h3>
@@ -308,10 +345,16 @@ export default function Home() {
                 <span className="text-3xl mb-4 block">🥈</span>
                 <p className="text-sm text-zinc-400 font-medium">{eventData.prizes[1].reward}</p>
               </div>
-            </div>
+            </motion.div>
 
             {/* 1st Place */}
-            <div className="premium-card-primary p-6 flex flex-col justify-between min-h-[220px] relative border-emerald-500/20 shadow-lg shadow-emerald-950/10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0, ease: [0.16, 1, 0.3, 1] }}
+              className="premium-card-primary p-6 flex flex-col justify-between min-h-[220px] relative border-emerald-500/20 shadow-lg shadow-emerald-950/10 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+            >
               <div className="absolute top-3 right-3 px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] font-bold uppercase tracking-wider border border-emerald-500/20">
                 Champion
               </div>
@@ -323,10 +366,16 @@ export default function Home() {
                 <span className="text-4xl mb-4 block">🥇</span>
                 <p className="text-sm text-zinc-300 font-medium">{eventData.prizes[0].reward}</p>
               </div>
-            </div>
+            </motion.div>
 
             {/* 3rd Place */}
-            <div className="premium-card p-6 flex flex-col justify-between min-h-[200px]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="premium-card p-6 flex flex-col justify-between min-h-[200px] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+            >
               <div>
                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-1">Second Runner Up</span>
                 <h3 className="text-2xl font-bold text-zinc-200 mb-4">Third Place</h3>
@@ -335,7 +384,7 @@ export default function Home() {
                 <span className="text-3xl mb-4 block">🥉</span>
                 <p className="text-sm text-zinc-400 font-medium">{eventData.prizes[2].reward}</p>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="border border-zinc-900 bg-zinc-950/40 rounded-xl p-6 text-center max-w-2xl mx-auto">
