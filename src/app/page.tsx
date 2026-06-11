@@ -30,6 +30,7 @@ import Navbar from "@/components/Navbar";
 import SpotlightHero from "@/components/SpotlightHero";
 import Modals from "@/components/Modals";
 import AnimatedCounter from "@/components/AnimatedCounter";
+import SuggestionBox from "@/components/SuggestionBox";
 
 const IconMap: Record<string, React.ElementType> = {
   BrainCircuit,
@@ -396,11 +397,28 @@ export default function Home() {
             </motion.div>
           </div>
 
-          <div className="border border-zinc-900 bg-zinc-950/40 rounded-xl p-6 text-center max-w-2xl mx-auto">
-            <h3 className="text-sm font-bold text-zinc-200 mb-2 flex items-center justify-center gap-2">
-              <Award className="h-4 w-4 text-emerald-500" /> {eventData.participationCertificate}
-            </h3>
-            <p className="text-xs text-zinc-550 leading-relaxed">All participants will receive a verified e-certificate issued by the AIML Club to add to their portfolios.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="border border-zinc-900 bg-zinc-950/40 rounded-xl p-6 text-center flex flex-col justify-center items-center">
+              <h3 className="text-sm font-bold text-zinc-200 mb-2 flex items-center justify-center gap-2">
+                <Award className="h-4 w-4 text-emerald-500" /> {eventData.participationCertificate}
+              </h3>
+              <p className="text-xs text-zinc-500 leading-relaxed max-w-sm">All participants will receive a verified e-certificate issued by the AIML Club to add to their portfolios.</p>
+            </div>
+            
+            <div className="border border-emerald-500/20 bg-emerald-950/5 rounded-xl p-6 text-center flex flex-col justify-center items-center shadow-lg shadow-emerald-950/5">
+              <h3 className="text-sm font-bold text-emerald-450 mb-2 flex items-center justify-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Live Results & Announcements
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-sm mb-4">Event announcements and live results will be streamed in real-time during the challenge.</p>
+              <a 
+                href="https://result.aimlcluboct.in/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded bg-emerald-500 hover:bg-emerald-450 text-black font-bold text-[11px] transition-colors cursor-pointer"
+              >
+                Go to Live Results <ArrowRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
           </div>
         </motion.section>
 
@@ -457,6 +475,14 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </motion.section>
+
+        {/* Your Voice Matters Section */}
+        <motion.section
+          {...animationProps()}
+          className="w-full"
+        >
+          <SuggestionBox />
         </motion.section>
 
         {/* Contact/Coordinators CTA Card */}
